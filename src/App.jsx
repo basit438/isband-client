@@ -2,7 +2,7 @@ import './App.css'
 import Home from './pages/Home'
 import { createBrowserRouter , RouterProvider } from 'react-router-dom'
 import Layout from './pages/Layout'
-import Productlist from './pages/productlist'
+import Productlist from './pages/Productlist'
 import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
 import Login from './pages/Login'
@@ -10,6 +10,7 @@ import Register from './pages/Register'
 import Profile from './pages/Profile'
 import { AuthProvider } from './context/AuthContext'
 import CreateProduct from './pages/CreateProduct'
+import Wishlist from './pages/Wishlist'
 function App() {
 
   const router = createBrowserRouter([
@@ -48,6 +49,10 @@ function App() {
         {
           path : "/create-product",
           element : <CreateProduct/>
+        },
+        {
+          path : "/Wishlist",
+          element : <Wishlist/>
         }
       ]
     }

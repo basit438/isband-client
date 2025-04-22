@@ -38,10 +38,12 @@ function Header() {
             {[
               { name: "HOME", path: "/" },
               { name: "SHOP", path: "/Productlist" },
-              { name: "PROMOTION", path: "/promotion" },
+              // { name: "PROMOTION", path: "/promotion" },
               { name: "PAGES", path: "/pages" },
               { name: "BLOG", path: "/blog" },
               { name: "CONTACT", path: "/contact" },
+              // { name: "ABOUT", path: "/about" },
+              { name: "WISHLIST", path: "/wishlist" },
             ].map((link) => (
               <Link
                 key={link.name}
