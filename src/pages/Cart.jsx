@@ -1,6 +1,6 @@
 import axiosInstance from '../utils/axios';
 import { useState, useEffect, useRef } from 'react';
-import { Trash2, Plus, Minus, ArrowRight } from 'react-feather';
+import { Trash2, Plus, Minus, ArrowRight, Heart } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import gsap from 'gsap';
@@ -10,6 +10,7 @@ function Cart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [initialLoad, setInitialLoad] = useState(true);
+  const [promoCode, setPromoCode] = useState('');
   const navigate = useNavigate();
   const { updateCartCount } = useAuth();
   
@@ -288,11 +289,21 @@ function Cart() {
     }
   };
 
+  const handlePromoCode = (e) => {
+    e.preventDefault();
+    alert(`Promo code "${promoCode}" applied!`);
+    setPromoCode('');
+  };
+
+  const moveToWishlist = (productId) => {
+    alert(`Moving item to wishlist functionality will be implemented soon!`);
+  };
+
   if (loading) {
     return (
       <div ref={loaderRef} className="text-center p-16 flex flex-col items-center justify-center">
-        <div className="w-12 h-12 border-4 border-gray-200 border-t-red-500 rounded-full animate-spin mb-4"></div>
-        <p className="text-gray-600">Loading your bag...</p>
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin mb-4"></div>
+        <p className="text-gray-600">Loading your shopping bag...</p>
       </div>
     );
   }
@@ -304,7 +315,7 @@ function Cart() {
         <p className="text-red-500 font-medium">{error}</p>
         <button 
           onClick={fetchCart}
-          className="mt-4 text-sm text-gray-700 underline hover:text-red-500"
+          className="mt-4 text-sm text-gray-700 underline hover:text-black"
         >
           Try again
         </button>
@@ -314,33 +325,51 @@ function Cart() {
   
   if (!cartData || cartData.products.length === 0) {
     return (
-      <div ref={pageRef} className="text-center p-12">
-        <h2 className="text-3xl font-bold mb-6">Your bag is empty</h2>
-        <p className="text-gray-600 mb-8">Add some products to your bag to see them here!</p>
-        <button 
-          className="bg-red-500 text-white px-6 py-3 hover:bg-red-600 transition-colors font-medium"
-          onClick={() => navigate('/products')}
-        >
-          CONTINUE SHOPPING
-        </button>
+      <div ref={pageRef} className="text-center p-12 max-w-6xl mx-auto">
+        <h2 className="text-2xl font-normal mb-6">Shopping bag (0)</h2>
+        <div className="border-t border-b py-16 mb-8">
+          <p className="text-gray-600 mb-8">Your shopping bag is empty</p>
+          <button 
+            className="bg-black text-white px-12 py-3 hover:opacity-80 transition-opacity font-normal"
+            onClick={() => navigate('/products')}
+          >
+            CONTINUE SHOPPING
+          </button>
+        </div>
+        <div className="max-w-lg mx-auto">
+          <h3 className="text-lg font-medium mb-4">Need help?</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="font-medium mb-2">Contact us</p>
+              <p>Customer service: +1-888-770-7140</p>
+              <p className="mb-2">Available 7 days a week, 7 AM - 1 AM ET</p>
+              <p className="underline cursor-pointer">Chat with us</p>
+            </div>
+            <div>
+              <p className="font-medium mb-2">Shipping & Returns</p>
+              <p className="underline cursor-pointer mb-2">Delivery information</p>
+              <p className="underline cursor-pointer">Return & refund policy</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div ref={pageRef} className="max-w-6xl mx-auto p-4 md:p-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">/Bag</h1>
+    <div ref={pageRef} className="max-w-6xl mx-auto px-4 md:px-8 pt-8 pb-16">
+      <div className="mb-8">
+        <h1 className="text-2xl font-normal text-gray-800">Shopping bag ({cartData.products.length})</h1>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Product List - Takes up 2/3 on desktop */}
         <div className="lg:col-span-2">
-          <div className="space-y-5">
+          <div className="border-t border-gray-200">
             {cartData.products.map((item, index) => (
               <div 
                 key={item.productId} 
-                className="border-b border-gray-200 pb-5"
+                className="border-b border-gray-200 py-6"
                 ref={el => {
                   if (el) {
                     el.dataset.productId = item.productId;
@@ -348,52 +377,64 @@ function Cart() {
                   }
                 }}
               >
-                <div className="flex flex-row gap-4">
+                <div className="flex flex-row gap-6">
                   {/* Product Image */}
-                  <div className="w-24">
+                  <div className="w-28">
                     <img
                       src={item.product?.colors?.[0]?.images?.[0] || '/heroimg.jpeg'}
                       alt={item.product?.name}
-                      className="w-24 h-24 object-cover"
+                      className="w-28 h-36 object-cover"
                     />
                   </div>
                   
                   {/* Product Details */}
                   <div className="flex-1">
                     <div className="flex justify-between">
-                      <h3 className="text-base font-medium">{item.product?.name}</h3>
-                      <p className="text-base font-bold price-display">₹{item.subtotal.toFixed(2)}</p>
+                      <div>
+                        <h3 className="text-base font-medium">{item.product?.name}</h3>
+                        <p className="text-sm font-normal mt-1">₹{item.product.price.toFixed(2)}</p>
+                      </div>
+                      <p className="text-base font-normal price-display">₹{item.subtotal.toFixed(2)}</p>
                     </div>
                     
-                    <div className="mt-1">
+                    <div className="mt-2">
                       <p className="text-xs text-gray-600">Color: {item.product?.colors?.[0]?.name || 'Default'}</p>
                       <p className="text-xs text-gray-600">Size: {item.product?.size || 'OS'}</p>
+                      <p className="text-xs text-gray-600">Art. No.: {item.product?.id?.substring(0, 8) || 'N/A'}</p>
                     </div>
                     
-                    <div className="mt-3 flex justify-between items-center">
-                      <div className="flex items-center border border-gray-300">
+                    <div className="mt-6 flex items-center justify-between">
+                      <div className="flex items-center bg-gray-100 border border-gray-300">
                         <button
                           onClick={() => handleUpdateQuantity(item.productId, Math.max(1, item.quantity - 1))}
-                          className="px-2 py-1 text-gray-700 hover:bg-gray-100 transition-colors"
+                          className="px-3 py-1 text-gray-700 hover:bg-gray-200 transition-colors"
                           disabled={item.quantity <= 1}
                         >
-                          <Minus size={14} />
+                          <Minus size={16} />
                         </button>
-                        <span className="px-3 text-sm font-medium quantity-display">{item.quantity}</span>
+                        <span className="px-4 py-1 text-sm font-medium bg-white border-l border-r border-gray-300 quantity-display">{item.quantity}</span>
                         <button
                           onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
-                          className="px-2 py-1 text-gray-700 hover:bg-gray-100 transition-colors"
+                          className="px-3 py-1 text-gray-700 hover:bg-gray-200 transition-colors"
                         >
-                          <Plus size={14} />
+                          <Plus size={16} />
                         </button>
                       </div>
                       
-                      <button
-                        onClick={() => handleRemoveItem(item.productId)}
-                        className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors"
-                      >
-                        Remove
-                      </button>
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => moveToWishlist(item.productId)}
+                          className="flex items-center text-xs text-gray-700 hover:text-black transition-colors"
+                        >
+                          <Heart size={14} className="mr-1" /> Move to favorites
+                        </button>
+                        <button
+                          onClick={() => handleRemoveItem(item.productId)}
+                          className="text-xs text-gray-700 hover:text-black transition-colors"
+                        >
+                          <Trash2 size={14} className="inline mr-1" /> Remove
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -401,50 +442,98 @@ function Cart() {
             ))}
           </div>
           
-          <div className="mt-6">
+          <div className="mt-8 flex justify-between items-center">
             <button 
-              className="inline-block border border-gray-300 text-gray-800 px-6 py-2 hover:bg-gray-50 font-medium transition-colors text-sm"
+              className="inline-block border border-gray-300 text-gray-800 px-6 py-2 hover:bg-gray-50 transition-colors text-sm"
               onClick={() => navigate('/products')}
             >
               CONTINUE SHOPPING
+            </button>
+            
+            <button 
+              className="inline-block text-gray-600 text-sm hover:text-black transition-colors"
+              onClick={handleClearCart}
+            >
+              Clear shopping bag
             </button>
           </div>
         </div>
         
         {/* Order Summary - Takes up 1/3 on desktop */}
         <div className="lg:col-span-1">
-          <div ref={summaryRef} className="border border-gray-200 p-6 bg-gray-50">
-            <h2 className="text-xl font-bold mb-4">Order summary</h2>
+          <div ref={summaryRef} className="bg-gray-50 p-6">
+            <h2 className="text-xl font-semibold mb-4">Order summary</h2>
             
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between text-sm font-medium">
+            {/* Discount code section */}
+            <div className="mb-8">
+              <form onSubmit={handlePromoCode}>
+                <p className="text-sm mb-2">Discount code</p>
+                <div className="flex gap-4">
+                  <input 
+                    type="text" 
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value)}
+                    className="flex-1 border border-gray-300 px-3 py-2 text-sm" 
+                    placeholder="Enter code"
+                  />
+                  <button 
+                    type="submit"
+                    className="bg-black text-white px-4 py-2 text-sm hover:opacity-80 transition-opacity"
+                  >
+                    APPLY
+                  </button>
+                </div>
+              </form>
+            </div>
+            
+            <div className="border-t border-gray-300 pt-4 space-y-3">
+              <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
                 <span ref={subtotalPriceRef}>₹{cartData.totalPrice.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-sm font-medium">
-                <span>Estimated Shipping</span>
+              <div className="flex justify-between text-sm">
+                <span>Delivery</span>
                 <span>₹0.00</span>
               </div>
               <div className="border-t border-gray-300 pt-3 mt-3"></div>
-              <div className="flex justify-between font-bold text-base">
-                <span>Estimated Total</span>
-                <span ref={totalPriceRef}>₹{cartData.totalPrice.toFixed(2)}</span>
+              <div className="flex justify-between font-medium text-base">
+                <span>Total</span>
+                <span className="text-right">
+                  <div className="text-xs text-gray-500">Tax included</div>
+                  <div ref={totalPriceRef}>₹{cartData.totalPrice.toFixed(2)}</div>
+                </span>
               </div>
             </div>
             
             <button
-              className="w-full bg-red-500 text-white py-3 px-4 hover:bg-red-600 transition-colors flex items-center justify-center gap-2 mb-6 font-medium"
-              onClick={() => alert('Checkout functionality coming soon!')}
+              className="w-full mt-6 bg-black text-white py-3 px-4 hover:opacity-80 transition-opacity flex items-center justify-center gap-2 font-medium"
+              onClick={() => navigate('/checkout')}
             >
-              SECURE CHECKOUT <ArrowRight size={16} />
+              CONTINUE TO CHECKOUT <ArrowRight size={16} />
             </button>
             
-            <div className="text-xs text-gray-700 mt-6">
-              <h3 className="font-bold mb-2">Need assistance?</h3>
-              <p className="mb-2">Please contact our Customer Care team either:</p>
-              <p className="mb-2">By telephone: +1-888-770-7140</p>
-              <p className="mb-2">Or via our <span className="text-red-500 hover:text-red-700 cursor-pointer transition-colors">Contact form</span></p>
-              <p>Our Customer Care team is available to help you 7 days a week from 7 AM to 1 AM ET</p>
+            <div className="mt-8 text-center">
+              <p className="text-xs text-gray-600 mb-2">We accept:</p>
+              <div className="flex justify-center gap-2">
+                <div className="w-12 h-8 bg-gray-200 rounded"></div>
+                <div className="w-12 h-8 bg-gray-200 rounded"></div>
+                <div className="w-12 h-8 bg-gray-200 rounded"></div>
+                <div className="w-12 h-8 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+            
+            <div className="mt-8 border-t border-gray-300 pt-6 text-xs text-gray-600 space-y-4">
+              <div>
+                <h3 className="font-medium mb-2">Delivery options:</h3>
+                <p>Standard Delivery (4-7 business days): ₹0.00</p>
+                <p>Express Delivery (2-3 business days): ₹199.00</p>
+              </div>
+              
+              <div>
+                <h3 className="font-medium mb-2">Need help?</h3>
+                <p className="mb-1">Customer service: +1-888-770-7140</p>
+                <p>Available 7 days a week, 7 AM - 1 AM ET</p>
+              </div>
             </div>
           </div>
         </div>

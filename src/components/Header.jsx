@@ -1,9 +1,9 @@
 import React from "react";
-import { Search, User, ShoppingBag } from "react-feather";
+import { Heart, User, ShoppingBag } from "react-feather";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../utils/axios';
+import { useAuth } from "../context/AuthContext";
+import axiosInstance from "../utils/axios";
 function Header() {
   const navigate = useNavigate();
   const { isAuthenticated, cartCount, logout } = useAuth();
@@ -19,7 +19,7 @@ function Header() {
       navigate("/login");
     }
   };
-    // const user = useSelector((state) => state.user);  
+  // const user = useSelector((state) => state.user);
 
   return (
     <>
@@ -42,8 +42,8 @@ function Header() {
               { name: "PAGES", path: "/pages" },
               { name: "BLOG", path: "/blog" },
               { name: "CONTACT", path: "/contact" },
-              // { name: "ABOUT", path: "/about" },
-              { name: "WISHLIST", path: "/wishlist" },
+              { name: "ABOUT", path: "/about" },
+              // { name: "WISHLIST", path: "/wishlist" },
             ].map((link) => (
               <Link
                 key={link.name}
@@ -58,7 +58,10 @@ function Header() {
           {/* Icons */}
           <div className="flex items-center space-x-4">
             <button className="text-gray-700 hover:text-red-500">
-              <Search size={20} />
+
+              <Link to="/wishlist">
+                <Heart size={20} />
+              </Link>
             </button>
             {isAuthenticated ? (
               <>
@@ -86,9 +89,7 @@ function Header() {
               </>
             ) : (
               <Link to="/login">
-                <button className="text-red-500 hover:underline">
-                  Login
-                </button>
+                <button className="text-red-500 hover:underline">Login</button>
               </Link>
             )}
           </div>

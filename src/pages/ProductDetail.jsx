@@ -19,6 +19,7 @@ const ProductDetails = () => {
   const [showCare, setShowCare] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const [isInWishlist, setIsInWishlist] = useState(false);
   const imageRef = useRef(null);
 
   useEffect(() => {
@@ -44,7 +45,21 @@ const ProductDetails = () => {
     };
 
     fetchProductDetails();
+    checkIfInWishlist();
   }, [id]);
+  
+  // Check if product is in wishlist
+  const checkIfInWishlist = async () => {
+    try {
+      const res = await axiosInstance.get("/wishlist/");
+      if (res.data.wishlist) {
+        const isProductInWishlist = res.data.wishlist.some(item => item._id === id);
+        setIsInWishlist(isProductInWishlist);
+      }
+    } catch (error) {
+      console.error("Error checking wishlist status:", error);
+    }
+  };
   
   // Handle color selection
   const handleColorSelect = (color) => {
@@ -82,20 +97,28 @@ const ProductDetails = () => {
     setTimeout(() => document.body.removeChild(notification), 3000);
   };
 
-  const handleAddToWishlist = async () => {
+  const handleWishlistToggle = async () => {
     try {
       const response = await axiosInstance.post('/wishlist/add', {
         productId: product._id,
       });
 
       if (response.data.success) {
-        showNotification('Added to your favorites');
+        // Toggle the wishlist state
+        const newWishlistState = !isInWishlist;
+        setIsInWishlist(newWishlistState);
+        
+        if (newWishlistState) {
+          showNotification('Added to your favorites');
+        } else {
+          showNotification('Removed from your favorites');
+        }
       } else {
-        showNotification(response.data.message || 'Error adding to favorites');
+        showNotification(response.data.message || 'Error updating favorites');
       }
     } catch (error) {
-      console.error("Error adding product to wishlist:", error);
-      showNotification('Failed to add product to favorites');
+      console.error("Error updating wishlist:", error);
+      showNotification('Failed to update favorites');
     }
   };
   
@@ -302,11 +325,17 @@ const ProductDetails = () => {
                 Add to Shopping Bag
               </button>
               <button 
-                onClick={handleAddToWishlist}
-                className="w-full border border-black py-3 px-6 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+                onClick={handleWishlistToggle}
+                className={`w-full border py-3 px-6 flex items-center justify-center gap-2 transition-colors
+                  ${isInWishlist 
+                    ? 'border-red-500 text-red-500 hover:bg-red-50' 
+                    : 'border-black hover:bg-gray-50'}`}
               >
-                <Heart size={18} />
-                <span>Add to Favorites</span>
+                <Heart 
+                  size={18} 
+                  className={isInWishlist ? "text-red-500 fill-current" : ""} 
+                />
+                <span>{isInWishlist ? 'Remove from Favorites' : 'Add to Favorites'}</span>
               </button>
             </div>
             
