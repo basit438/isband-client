@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Heart, X, ShoppingBag } from "react-feather";
+import { Heart, X } from "react-feather";
 import axiosInstance from "../utils/axios";
+import AddToCart from "../components/AddToCart";
 
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
@@ -88,10 +89,13 @@ const Wishlist = () => {
                     </button>
                     
                     <div className="absolute bottom-0 left-0 right-0 bg-white bg-opacity-90 py-2 px-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <button className="w-full bg-black text-white py-2 text-sm uppercase tracking-wider flex items-center justify-center gap-2">
-                        <ShoppingBag size={16} />
-                        <span>Add to Bag</span>
-                      </button>
+                      <AddToCart 
+                        productId={product._id}
+                        showQuantity={false}
+                        size="small"
+                        buttonText="Add to Bag"
+                        buttonClassName="w-full bg-black text-white py-2 text-sm uppercase tracking-wider flex items-center justify-center gap-2"
+                      />
                     </div>
                   </div>
                   

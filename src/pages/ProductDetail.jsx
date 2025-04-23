@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Heart, ShoppingBag, ChevronDown, ChevronUp, Plus, Minus } from "react-feather";
+import { Heart, ShoppingBag, ChevronDown, ChevronUp } from "react-feather";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from '../utils/axios';
+import AddToCart from '../components/AddToCart';
 
 const ProductDetails = () => {
   const { id } = useParams(); // get product ID from URL
@@ -13,7 +14,8 @@ const ProductDetails = () => {
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedColorImages, setSelectedColorImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState(null);
+  // Removed quantity state as it's now managed in the AddToCart component
   const [showDescription, setShowDescription] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
   const [showCare, setShowCare] = useState(false);
@@ -122,28 +124,7 @@ const ProductDetails = () => {
     }
   };
   
-  const handleAddToCart = async () => {
-    try {
-      const response = await axiosInstance.post('/cart/add', {
-          products: [
-            {
-              productId: product._id,
-              quantity: quantity, // Use selected quantity
-            },
-          ],
-        }
-      );
-
-      if (response.data.success) {
-        showNotification('Added to your shopping bag');
-      } else {
-        showNotification(response.data.message || 'Error adding to bag');
-      }
-    } catch (error) {
-      console.error("Error adding product to cart:", error);
-      showNotification('Failed to add product to bag');
-    }
-  };
+  // handleAddToCart is now handled by the AddToCart component
   
   // Handle image zoom functionality
   const handleMouseMove = (e) => {
@@ -156,13 +137,7 @@ const ProductDetails = () => {
     setZoomPosition({ x, y });
   };
   
-  const handleQuantityChange = (type) => {
-    if (type === 'increase') {
-      setQuantity(prev => prev + 1);
-    } else if (type === 'decrease' && quantity > 1) {
-      setQuantity(prev => prev - 1);
-    }
-  };
+  // handleQuantityChange is now handled by the AddToCart component
 
 
   return (
@@ -281,12 +256,17 @@ const ProductDetails = () => {
             {/* Size Selection if available */}
             {product.sizes && product.sizes.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-sm font-medium mb-2">Size</h3>
+                <h3 className="text-sm font-medium mb-2">Size: <span className="font-normal">{selectedSize?.size || 'Select a size'}</span></h3>
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map((size, index) => (
                     <div 
                       key={index}
-                      className="border border-gray-300 px-3 py-2 min-w-[40px] text-center cursor-pointer hover:border-black transition-colors"
+                      onClick={() => setSelectedSize(size)}
+                      className={`border px-3 py-2 min-w-[40px] text-center cursor-pointer transition-colors
+                        ${selectedSize?.size === size.size 
+                          ? 'border-black bg-black text-white' 
+                          : 'border-gray-300 hover:border-black'}
+                      `}
                     >
                       {size.size}
                     </div>
@@ -295,35 +275,16 @@ const ProductDetails = () => {
               </div>
             )}
             
-            {/* Quantity Selector */}
-            <div className="mb-6">
-              <h3 className="text-sm font-medium mb-2">Quantity</h3>
-              <div className="flex items-center border border-gray-300 w-32">
-                <button 
-                  onClick={() => handleQuantityChange('decrease')}
-                  className="px-3 py-2 text-gray-500 hover:text-black"
-                  disabled={quantity <= 1}
-                >
-                  <Minus size={16} />
-                </button>
-                <span className="flex-1 text-center">{quantity}</span>
-                <button 
-                  onClick={() => handleQuantityChange('increase')}
-                  className="px-3 py-2 text-gray-500 hover:text-black"
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-            </div>
-            
             {/* Add to Cart and Wishlist Buttons */}
             <div className="flex flex-col gap-3 mb-8">
-              <button 
-                onClick={handleAddToCart} 
-                className="w-full bg-black text-white py-3 px-6 hover:bg-gray-800 transition-colors font-medium"
-              >
-                Add to Shopping Bag
-              </button>
+              {/* Using the new AddToCart component with color and size */}
+              <AddToCart 
+                productId={product._id}
+                buttonClassName="w-full bg-black text-white py-3 px-6 hover:bg-gray-800 transition-colors font-medium"
+                onAddToCart={(quantity) => showNotification(`Added ${quantity} item(s) to your shopping bag`)}
+                selectedColor={selectedColor}
+                selectedSize={selectedSize}
+              />
               <button 
                 onClick={handleWishlistToggle}
                 className={`w-full border py-3 px-6 flex items-center justify-center gap-2 transition-colors

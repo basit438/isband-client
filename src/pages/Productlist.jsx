@@ -3,6 +3,8 @@ import { ShoppingBag, Search, Filter, X, ChevronRight } from "react-feather";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import AddToCart from '../components/AddToCart';
+import axiosInstance from '../utils/axios';
 
 function ProductList() {
   const [products, setProducts] = useState([]);
@@ -230,22 +232,33 @@ function ProductList() {
                         transition={{ duration: 0.3, delay: index * 0.05 }}
                         className="group cursor-pointer"
                       >
-                        <Link to={`/productdetail/${product._id}`} className="block">
-                          <div className="relative overflow-hidden mb-2">
-                            <img
-                              src={product?.colors?.[0]?.images?.[0] || "heroimg.jpeg"}
-                              alt={product.name}
-                              className="w-full h-80 object-cover transition-transform duration-700 group-hover:scale-105"
+                        <div>
+                          <Link to={`/productdetail/${product._id}`} className="block">
+                            <div className="relative overflow-hidden mb-2">
+                              <img
+                                src={product?.colors?.[0]?.images?.[0] || "heroimg.jpeg"}
+                                alt={product.name}
+                                className="w-full h-80 object-cover transition-transform duration-700 group-hover:scale-105"
+                              />
+                              {/* Favorite button could be added here */}
+                            </div>
+                            <div className="px-1">
+                              <h3 className="text-sm font-light text-gray-800 mb-1">{product.name || "No Title"}</h3>
+                              <p className="text-xs text-gray-500 mb-1">{product.brand || "Unknown Brand"}</p>
+                              <p className="text-sm font-medium">${product.price}</p>
+                            </div>
+                          </Link>
+                          {/* Quick add to cart - outside of Link to prevent navigation */}
+                          <div className="px-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" onClick={(e) => e.stopPropagation()}>
+                            <AddToCart 
+                              productId={product._id}
+                              showQuantity={false}
+                              size="small"
+                              buttonText="Add to Bag"
+                              buttonClassName="w-full bg-black text-white py-1 px-2 text-xs hover:bg-gray-800 transition-colors"
                             />
-                            {/* Favorite button could be added here */}
                           </div>
-                          <div className="px-1">
-                            <h3 className="text-sm font-light text-gray-800 mb-1">{product.name || "No Title"}</h3>
-                            <p className="text-xs text-gray-500 mb-1">{product.brand || "Unknown Brand"}</p>
-                            <p className="text-sm font-medium">${product.price}</p>
-                            {/* Color options could be added here */}
-                          </div>
-                        </Link>
+                        </div>
                       </motion.div>
                     ))}
                   </motion.div>

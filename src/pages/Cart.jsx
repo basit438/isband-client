@@ -1,9 +1,10 @@
 import axiosInstance from '../utils/axios';
 import { useState, useEffect, useRef } from 'react';
-import { Trash2, Plus, Minus, ArrowRight, Heart } from 'react-feather';
+import { Trash2, ArrowRight, Heart } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import gsap from 'gsap';
+import AddToCart from '../components/AddToCart';
 
 function Cart() {
   const [cartData, setCartData] = useState(null);
@@ -400,34 +401,27 @@ function Cart() {
                     <div className="mt-2">
                       <p className="text-xs text-gray-600">Color: {item.product?.colors?.[0]?.name || 'Default'}</p>
                       <p className="text-xs text-gray-600">Size: {item.product?.size || 'OS'}</p>
-                      <p className="text-xs text-gray-600">Art. No.: {item.product?.id?.substring(0, 8) || 'N/A'}</p>
+                      {/* <p className="text-xs text-gray-600">Art. No.: {item.product?.id?.substring(0, 8) || 'N/A'}</p> */}
                     </div>
                     
                     <div className="mt-6 flex items-center justify-between">
-                      <div className="flex items-center bg-gray-100 border border-gray-300">
-                        <button
-                          onClick={() => handleUpdateQuantity(item.productId, Math.max(1, item.quantity - 1))}
-                          className="px-3 py-1 text-gray-700 hover:bg-gray-200 transition-colors"
-                          disabled={item.quantity <= 1}
-                        >
-                          <Minus size={16} />
-                        </button>
-                        <span className="px-4 py-1 text-sm font-medium bg-white border-l border-r border-gray-300 quantity-display">{item.quantity}</span>
-                        <button
-                          onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
-                          className="px-3 py-1 text-gray-700 hover:bg-gray-200 transition-colors"
-                        >
-                          <Plus size={16} />
-                        </button>
-                      </div>
+                      <AddToCart
+                        productId={item.productId}
+                        initialQuantity={item.quantity}
+                        showQuantity={true}
+                        showButton={false}
+                        size="small"
+                        quantityClassName="flex items-center bg-gray-100 border border-gray-300"
+                        onQuantityChange={(newQuantity) => handleUpdateQuantity(item.productId, newQuantity)}
+                      />
                       
                       <div className="flex items-center gap-4">
-                        <button
+                        {/* <button
                           onClick={() => moveToWishlist(item.productId)}
                           className="flex items-center text-xs text-gray-700 hover:text-black transition-colors"
                         >
                           <Heart size={14} className="mr-1" /> Move to favorites
-                        </button>
+                        </button> */}
                         <button
                           onClick={() => handleRemoveItem(item.productId)}
                           className="text-xs text-gray-700 hover:text-black transition-colors"
