@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../utils/axios';
 
 function CreateProduct() {
   const navigate = useNavigate();
@@ -115,12 +115,10 @@ function CreateProduct() {
         });
       });
 
-      await axios.post('http://localhost:5002/api/v1/product/create-product', formDataToSend, {
+      await axiosInstance.post('/product/create-product', formDataToSend, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        withCredentials: true
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
       navigate('/productlist');

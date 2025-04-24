@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { ShoppingBag, Search, Filter, X, ChevronRight } from "react-feather";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import AddToCart from '../components/AddToCart';
@@ -33,8 +32,8 @@ function ProductList() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(
-        `http://localhost:5002/api/v1/product?page=${page}&search=${debouncedSearch}&category=${selectedCategory}&type=${selectedType}&minPrice=${debouncedPriceRange.min}&maxPrice=${debouncedPriceRange.max}`
+      const res = await axiosInstance.get(
+        `/product?page=${page}&search=${debouncedSearch}&category=${selectedCategory}&type=${selectedType}&minPrice=${debouncedPriceRange.min}&maxPrice=${debouncedPriceRange.max}`
       );
       setProducts(res.data.products);
       setTotalPages(res.data.totalPages);
