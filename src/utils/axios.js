@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'http://localhost:5002/api/v1',
+  baseURL: 'https://popacart-backend.onrender.com/api/v1',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
