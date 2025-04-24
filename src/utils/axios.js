@@ -2,24 +2,11 @@ import axios from 'axios';
 
 const instance = axios.create({
   baseURL: 'https://popacart-backend.onrender.com/api/v1',
-  withCredentials: true,
+  withCredentials: true, // send cookies with requests
   headers: {
     'Content-Type': 'application/json',
   }
 });
 
-// Add a request interceptor to add token if it exists
-instance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 export default instance;
