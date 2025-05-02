@@ -11,6 +11,7 @@ import Profile from './pages/Profile'
 import { AuthProvider } from './context/AuthContext'
 import CreateProduct from './pages/CreateProduct'
 import Wishlist from './pages/Wishlist'
+import Checkout from './pages/Checkout'
 function App() {
 
   const router = createBrowserRouter([
@@ -53,6 +54,10 @@ function App() {
         {
           path : "/Wishlist",
           element : <Wishlist/>
+        },
+        {
+          path : "/checkout",
+          element : <Checkout/>
         }
       ]
     }

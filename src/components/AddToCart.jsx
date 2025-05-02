@@ -14,14 +14,55 @@ const AddToCart = ({
   quantityClassName,
   onQuantityChange,
   selectedColor = null,
-  selectedSize = null
+  selectedSize = null,
+  disabled = false
 }) => {
   const [quantity, setQuantity] = useState(initialQuantity);
+  const [isInCart, setIsInCart] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // Update quantity if initialQuantity prop changes
   useEffect(() => {
     setQuantity(initialQuantity);
   }, [initialQuantity]);
+  
+  // Check if product is already in cart
+  useEffect(() => {
+    const checkIfInCart = async () => {
+      try {
+        const res = await axiosInstance.get('/cart');
+        if (res.data.success && res.data.cart && res.data.cart.products) {
+          // Check if this product with the same color and size is already in cart
+          const isProductInCart = res.data.cart.products.some(item => {
+            // Basic product ID check
+            const idMatch = item.productId === productId;
+            
+            // If color and size are specified, check those too
+            if (selectedColor && selectedSize) {
+              return idMatch && 
+                item.selectedColor && item.selectedColor.colorName === selectedColor.colorName && 
+                item.selectedSize === selectedSize.size;
+            } else if (selectedColor) {
+              return idMatch && item.selectedColor && item.selectedColor.colorName === selectedColor.colorName;
+            } else if (selectedSize) {
+              return idMatch && item.selectedSize === selectedSize.size;
+            }
+            
+            // If no color or size specified, just check the ID
+            return idMatch;
+          });
+          
+          setIsInCart(isProductInCart);
+        }
+      } catch (error) {
+        console.error('Error checking cart status:', error);
+      }
+    };
+    
+    if (productId) {
+      checkIfInCart();
+    }
+  }, [productId, selectedColor, selectedSize]);
 
   // Display a notification
   const showNotification = (message) => {
@@ -52,7 +93,11 @@ const AddToCart = ({
   };
 
   const handleAddToCart = async () => {
+    if (isInCart) return; // Prevent adding if already in cart
+    
     try {
+      setIsAddingToCart(true); // Set loading state
+      
       // Create product object with all available information
       const productData = {
         productId: productId,
@@ -61,12 +106,17 @@ const AddToCart = ({
       
       // Add color information if available
       if (selectedColor) {
-        productData.selectedColor = selectedColor;
+        // Ensure we're only sending the necessary color data
+        productData.selectedColor = {
+          colorName: selectedColor.colorName,
+          colorHex: selectedColor.colorHex
+        };
       }
       
       // Add size information if available
       if (selectedSize) {
-        productData.selectedSize = selectedSize;
+        // Send the size as a string value
+        productData.selectedSize = selectedSize.size;
       }
       
       const response = await axiosInstance.post('/cart/add', {
@@ -76,6 +126,9 @@ const AddToCart = ({
       if (response.data.success) {
         // Show success notification
         showNotification('Added to your shopping bag');
+        
+        // Update cart status
+        setIsInCart(true);
         
         // Call the callback if provided
         if (onAddToCart && typeof onAddToCart === 'function') {
@@ -87,6 +140,8 @@ const AddToCart = ({
     } catch (error) {
       console.error("Error adding product to cart:", error);
       showNotification('Failed to add product to bag');
+    } finally {
+      setIsAddingToCart(false); // Reset loading state
     }
   };
 
@@ -139,9 +194,10 @@ const AddToCart = ({
       {showButton && (
         <button 
           onClick={handleAddToCart} 
-          className={buttonClassName || defaultButtonClass}
+          disabled={isInCart || isAddingToCart || disabled}
+          className={`${buttonClassName || defaultButtonClass} ${isInCart ? 'bg-gray-500 hover:bg-gray-500 cursor-not-allowed' : ''} ${isAddingToCart ? 'opacity-75 cursor-wait' : ''} ${disabled ? 'bg-gray-400 hover:bg-gray-400 cursor-not-allowed' : ''}`}
         >
-          {buttonText}
+          {isInCart ? 'Added to Bag' : isAddingToCart ? 'Adding...' : buttonText}
         </button>
       )}
 

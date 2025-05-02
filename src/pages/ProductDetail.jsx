@@ -277,13 +277,22 @@ const ProductDetails = () => {
             
             {/* Add to Cart and Wishlist Buttons */}
             <div className="flex flex-col gap-3 mb-8">
-              {/* Using the new AddToCart component with color and size */}
+              {/* Size warning message if sizes exist but none selected */}
+              {product.sizes && product.sizes.length > 0 && !selectedSize && (
+                <div className="text-red-500 text-sm mb-2">
+                  Please select a size before adding to cart
+                </div>
+              )}
+              
+              {/* Using the AddToCart component with color and size */}
               <AddToCart 
                 productId={product._id}
                 buttonClassName="w-full bg-black text-white py-3 px-6 hover:bg-gray-800 transition-colors font-medium"
                 onAddToCart={(quantity) => showNotification(`Added ${quantity} item(s) to your shopping bag`)}
                 selectedColor={selectedColor}
                 selectedSize={selectedSize}
+                buttonText={product.sizes && product.sizes.length > 0 && !selectedSize ? 'Select a Size' : 'Add to Shopping Bag'}
+                disabled={product.sizes && product.sizes.length > 0 && !selectedSize}
               />
               <button 
                 onClick={handleWishlistToggle}
