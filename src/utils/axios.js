@@ -9,6 +9,5 @@ const instance = axios.create({
   }
 });
 
-// You don't need the interceptor for token since cookies are handled by the browser
 
 export default instance;

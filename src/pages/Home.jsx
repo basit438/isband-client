@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, User, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../utils/axios';
+import heroImg from '/menmodel.jpg';
 
 export default function EcommerceLandingPage() {
   const [cartItems] = useState(3);
@@ -24,81 +25,50 @@ export default function EcommerceLandingPage() {
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen font-sans text-gray-900">
       {/* Navigation */}
+      
 
       {/* Hero Section */}
-      <section className="relative bg-gray-100">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="flex flex-col justify-center p-8 md:p-16">
-              <div className="text-sm text-gray-600 mb-4">
-                SPRING / SUMMER COLLECTION 2027
-              </div>
-              <h1 className="text-3xl md:text-5xl font-bold mb-6">
-                Get up to 30% Off<br />New Arrivals
+      <section className="bg-white">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div className="flex flex-col space-y-4">
+              <span className="text-sm uppercase tracking-widest text-gray-500">
+                Spring/Summer Collection 2027
+              </span>
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+                Get up to <span className="text-red-600">30% Off</span>
+                <br /> New Arrivals
               </h1>
               <Link to="/productList">
-              <button className="bg-red-500 text-white px-6 py-2 w-32 hover:bg-red-600 transition-colors">
-                SHOP NOW
-              </button>
+                <button className="mt-4 bg-black text-white uppercase px-6 py-3 tracking-wide hover:bg-gray-800 transition">
+                  Shop Now
+                </button>
               </Link>
             </div>
-            <div className="hidden md:block">
-              <img 
-                src="/menmodel.jpg" 
-                alt="Fashion model wearing spring collection" 
-                className="object-cover h-full w-full"
+            <div className="w-full">
+              <img
+                src={heroImg}
+                alt="Model wearing spring collection"
+                className="w-full h-auto object-cover rounded-lg shadow-lg"
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Shop by Category */}
-      <section className="py-10 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8">
-            Shop by Category
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { src: '/womenmodel.jpeg', label: "WOMEN'S" },
-              { src: '/herosectionmimage.jpg', label: 'ACCESSORIES' },
-              { src: '/heroimg.jpeg', label: "MEN'S" },
-            ].map(({ src, label }) => (
-              <div
-                key={label}
-                className="relative group cursor-pointer h-64 overflow-hidden flex items-center justify-center"
-              >
-                <img
-                  src={src}
-                  alt={label}
-                  className="h-full w-auto object-center transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="bg-white px-4 py-2 text-gray-800 font-medium">
-                    {label}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+  
       {/* Featured Products Section */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
             Featured Products
           </h2>
-          
           {loading ? (
             <div className="text-center py-8">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-red-500 border-r-transparent"></div>
@@ -110,21 +80,18 @@ export default function EcommerceLandingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
               {featuredProducts.length > 0 ? (
                 featuredProducts.map(product => (
-                  <div 
-                    key={product._id}
-                    className="bg-white shadow-sm hover:shadow-md transition-shadow group"
-                  >
-                    <Link to={`/productdetail/${product._id}`}>
+                  <div key={product._id} className="bg-white shadow-sm hover:shadow-md transition group rounded-lg overflow-hidden">
+                    <Link to={`/productdetail/${product._id}`}>  
                       <div className="relative overflow-hidden h-64">
-                        <img 
-                          src={product.colors && product.colors[0] && product.colors[0].images && product.colors[0].images[0] 
-                            ? product.colors[0].images[0] 
-                            : '/menmodel.jpg'} 
-                          alt={product.name} 
-                          className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                        <img
+                          src={
+                            product.colors?.[0]?.images?.[0] || heroImg
+                          }
+                          alt={product.name}
+                          className="w-full h-full object-contain object-center transition-transform duration-300 group-hover:scale-105"
                         />
                         {product.discount > 0 && (
-                          <div className="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 text-xs">
+                          <div className="absolute top-0 right-0 bg-red-600 text-white px-2 py-1 text-xs">
                             {product.discount}% OFF
                           </div>
                         )}
@@ -136,14 +103,14 @@ export default function EcommerceLandingPage() {
                           <div>
                             {product.discount > 0 ? (
                               <div className="flex items-center">
-                                <span className="text-red-500 font-bold mr-2">${product.finalPrice}</span>
+                                <span className="text-red-600 font-bold mr-2">${product.finalPrice}</span>
                                 <span className="text-gray-400 text-sm line-through">${product.price}</span>
                               </div>
                             ) : (
-                              <span className="text-red-500 font-bold">${product.finalPrice || product.price}</span>
+                              <span className="text-red-600 font-bold">${product.finalPrice || product.price}</span>
                             )}
                           </div>
-                          <button className="text-gray-500 hover:text-red-500 transition-colors">
+                          <button className="text-gray-500 hover:text-red-600 transition">
                             <ShoppingBag size={18} />
                           </button>
                         </div>
@@ -158,14 +125,47 @@ export default function EcommerceLandingPage() {
               )}
             </div>
           )}
-          
           <div className="text-center mt-8">
-            <Link to="/Productlist" className="inline-block bg-red-500 text-white px-6 py-2 hover:bg-red-600 transition-colors">
+            <Link to="/productList" className="inline-block bg-red-600 text-white uppercase px-6 py-3 hover:bg-red-700 transition">
               View All Products
             </Link>
           </div>
         </div>
       </section>
+
+          {/* Shop by Category */}
+          <section className="bg-gray-50">
+        <div className="container mx-auto px-4 py-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
+            Shop by Category
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {[
+              { src: '/womenmodel.jpeg', label: "Women" },
+              { src: '/heroimg.jpeg', label: "Men" },
+              { src: '/herosectionmimage.jpg', label: "Accessories" },
+            ].map(({ src, label }) => (
+              <Link
+                key={label}
+                to={`/category/${label.toLowerCase()}`}
+                className="relative group overflow-hidden rounded-lg"
+              >
+                <img
+                  src={src}
+                  alt={label}
+                  className="w-full h-48 sm:h-64 object-contain transform group-hover:scale-105 transition"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-25 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                  <span className="text-white text-lg font-semibold uppercase tracking-wide">
+                    {label}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-10 mt-auto">
@@ -174,7 +174,7 @@ export default function EcommerceLandingPage() {
             <div>
               <h3 className="text-lg font-bold mb-4">COLOSHOP</h3>
               <p className="text-gray-400 text-sm">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac tempus magna.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
               </p>
             </div>
             <div>
@@ -201,12 +201,12 @@ export default function EcommerceLandingPage() {
                 Stay updated with our latest offers and promotions.
               </p>
               <div className="flex">
-                <input 
-                  type="email" 
-                  placeholder="Your Email" 
-                  className="bg-gray-700 text-white px-3 py-2 text-sm w-full outline-none focus:ring-1 focus:ring-red-500"
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  className="bg-gray-700 text-white px-3 py-2 text-sm w-full outline-none focus:ring-1 focus:ring-red-600"
                 />
-                <button className="bg-red-500 px-4 text-white hover:bg-red-600">
+                <button className="bg-red-600 px-4 text-white hover:bg-red-700 transition">
                   →
                 </button>
               </div>
