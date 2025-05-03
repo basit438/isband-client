@@ -12,6 +12,9 @@ import { AuthProvider } from './context/AuthContext'
 import CreateProduct from './pages/CreateProduct'
 import Wishlist from './pages/Wishlist'
 import Checkout from './pages/Checkout'
+import Contact from './pages/Contact'
+import Blog from './pages/Blog'
+import About from './pages/About'
 function App() {
 
   const router = createBrowserRouter([
@@ -58,6 +61,18 @@ function App() {
         {
           path : "/checkout",
           element : <Checkout/>
+        },
+        {
+          path : "contact",
+          element : <Contact/>
+        },
+        {
+          path : "blog",
+          element : <Blog/>
+        },
+        {
+          path : "about",
+          element : <About/>
         }
       ]
     }
